@@ -1,0 +1,40 @@
+{   "region": "us-east-1",
+    "dev": {
+        "vpc" : {
+            "cidr" : "10.10.0.0/16",
+            "subnetcount" :12,
+            "subnetmask": 9,
+            "allowedports": {
+                "inbound" : [
+                    {
+                        "port": 22,
+                        "source": "122.203.24.146/32"
+                    },
+                    {
+                        "port": 22,
+                        "source": "160.122.234.6/32"
+                    }
+                ],
+                "outbound": [
+                    {
+                        "port" : 0,
+                        "destination" : "0.0.0.0/0"
+                    }
+                ]
+            }
+        },
+        "ec2": {
+            "Count": 1,
+            "ImageId": "ami-026c8acd92718196b",
+            "InstanceInitiatedShutdownBehavior": "terminate",
+            "InstanceType": "t2.micro", 
+            "KeyName" : "jnks",
+            "AssociatePublicIpAddress": "true",
+            "SubnetId": "subnet-006b224dc275302d7",
+            "SecurityGroupId": "sg-089f06ae4d0f2ba50",
+            "VolumeType" : "gp2", 
+            "DeleteVolumeOnTermination" : "true", 
+            "VolumeSize" : "20"
+        }
+    }
+}

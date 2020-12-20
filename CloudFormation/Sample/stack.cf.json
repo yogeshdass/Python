@@ -1,0 +1,238 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Parameters": {
+        "VpcCIDR": {
+            "Type": "String",
+            "Default": "10.10.0.0/16"
+        }
+    },
+    "Resources": {
+        "vpc": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "VpcCIDR"
+                },
+                "EnableDnsSupport": true,
+                "EnableDnsHostnames": true,
+                "InstanceTenancy": "default"
+            }
+        },
+        "PuS1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "AvailabilityZone": { "Fn::Select": [ 0, { "Fn::GetAZs" : { "Ref" : "AWS::Region" }}]},
+                "CidrBlock": { "Fn::Select" : [ 0, { "Fn::Cidr" : [{ "Fn::GetAtt" : [ "vpc", "CidrBlock" ]}, 12, 9 ]}]},
+                "VpcId": {
+                    "Ref" : "vpc"
+                },
+                "MapPublicIpOnLaunch":"True"
+            }
+        },
+        "PuS2": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "AvailabilityZone": { "Fn::Select": [ 1, { "Fn::GetAZs" : { "Ref" : "AWS::Region" }}]},
+                "CidrBlock": { "Fn::Select" : [ 1, { "Fn::Cidr" : [{ "Fn::GetAtt" : [ "vpc", "CidrBlock" ]}, 12, 9 ]}]},
+                "VpcId": {
+                    "Ref" : "vpc"
+                },
+                "MapPublicIpOnLaunch":"True"
+            }
+        },
+        "igw": {
+            "Type": "AWS::EC2::InternetGateway"
+        },
+        "igwattachment" : {
+            "DependsOn": "igw",
+            "Type" : "AWS::EC2::VPCGatewayAttachment",
+            "Properties" : {
+               "VpcId" : { "Ref" : "vpc" },
+               "InternetGatewayId" : {
+                   "Ref" : "igw"
+                }
+            }
+        },
+        "PublicRt": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId" : {
+                    "Ref" : "vpc"
+                }
+            }
+        },
+        "PublicRouteAddition": {
+            "Type" : "AWS::EC2::Route",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref" : "PublicRt"
+                },
+                "DestinationCidrBlock" : "0.0.0.0/0",
+                "GatewayId": {
+                    "Ref" : "igw"
+                }
+            }
+        },
+        "PuS1RtAssocitation": {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : {
+                    "Ref" : "PublicRt"
+                },
+                "SubnetId" : {
+                    "Ref" : "PuS1"
+                }
+            }
+        },
+        "PuS2RtAssocitation": {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : {
+                    "Ref" : "PublicRt"
+                },
+                "SubnetId" : {
+                    "Ref" : "PuS2"
+                }
+            }
+        },
+        "CustomSg" : {
+            "DependsOn": "vpc",
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupDescription" : "SG for us-east-1-10.10.0.0-VPC",
+                "VpcId" : {
+                    "Ref" : "vpc"
+                }
+            }
+        },
+        "SgRuleSshSelf": {
+            "Type": "AWS::EC2::SecurityGroupIngress",
+            "DependsOn": "CustomSg",
+            "Properties": {
+                "GroupId": { "Ref": "CustomSg" },
+                "IpProtocol": "tcp",
+                "FromPort": "80",
+                "ToPort": "80",
+                "CidrIp": "0.0.0.0/0"
+            }
+        },
+        "SgRuleSshIBS": {
+            "Type": "AWS::EC2::SecurityGroupIngress",
+            "DependsOn": "CustomSg",
+            "Properties": {
+                "GroupId": { "Ref": "CustomSg" },
+                "IpProtocol": "tcp",
+                "FromPort": "22",
+                "ToPort": "22",
+                "CidrIp": "0.0.0.0/0"
+            }
+        },
+        "SgRuleAllTraffic": {
+            "Type": "AWS::EC2::SecurityGroupEgress",
+            "DependsOn": "CustomSg",
+            "Properties": {
+                "GroupId": { "Ref": "CustomSg" },
+                "IpProtocol": "-1",
+                "FromPort": "0",
+                "ToPort": "0",
+                "CidrIp": "0.0.0.0/0"
+            }
+        },
+        "ClassicLoadBalancer1" : {
+            "Type" : "AWS::ElasticLoadBalancing::LoadBalancer",
+            "Properties" : {
+                "SecurityGroups":[{"Ref":"CustomSg"}],
+                "Subnets":[{"Ref":"PuS1"},{"Ref":"PuS2"}],
+                "Listeners" : [ {
+                    "LoadBalancerPort" : "80",
+                    "InstancePort" : "80",
+                    "Protocol" : "HTTP"
+                }],
+                "HealthCheck" : {
+                    "Target" : "HTTP:80/",
+                    "HealthyThreshold" : "3",
+                    "UnhealthyThreshold" : "5",
+                    "Interval" : "30",
+                    "Timeout" : "5"
+                }
+            }
+        },
+        "LaunchConfig1" : {
+            "Type" : "AWS::AutoScaling::LaunchConfiguration",
+            "Properties" : {
+                "KeyName" : "jnks",
+                "ImageId" : "ami-005bdb005fb00e791",
+                "SecurityGroups" : [ { "Ref" : "CustomSg" } ],
+                "InstanceType" : "t2.nano"
+            }
+        },
+        "WebServerGroup" : {
+            "Type" : "AWS::AutoScaling::AutoScalingGroup",
+            "Properties" : {
+                "VPCZoneIdentifier":[{"Ref":"PuS1"}, {"Ref":"PuS2"}],
+                "LaunchConfigurationName" : { "Ref" : "LaunchConfig1" },
+                "MinSize" : "1",
+                "MaxSize" : "2",
+                "LoadBalancerNames" : [ { "Ref" : "ClassicLoadBalancer1" } ]
+            }
+        },
+        "WebServerScaleUpPolicy" : {
+            "Type" : "AWS::AutoScaling::ScalingPolicy",
+            "Properties" : {
+                "AdjustmentType" : "ChangeInCapacity",
+                "AutoScalingGroupName" : { "Ref" : "WebServerGroup" },
+                "Cooldown" : "60",
+                "ScalingAdjustment" : "1"
+            }
+        },
+        "WebServerScaleDownPolicy" : {
+            "Type" : "AWS::AutoScaling::ScalingPolicy",
+            "Properties" : {
+                "AdjustmentType" : "ChangeInCapacity",
+                "AutoScalingGroupName" : { "Ref" : "WebServerGroup" },
+                "Cooldown" : "60",
+                "ScalingAdjustment" : "-1"
+            }
+        },
+        "CPUAlarmHigh": {
+            "Type": "AWS::CloudWatch::Alarm",
+            "Properties": {
+                "AlarmDescription": "Scale-up if CPU > 90% for 10 minutes",
+                "MetricName": "CPUUtilization",
+                "Namespace": "AWS/EC2",
+                "Statistic": "Average",
+                "Period": "300",
+                "EvaluationPeriods": "2",
+                "Threshold": "90",
+                "AlarmActions": [ { "Ref": "WebServerScaleUpPolicy" } ],
+                "Dimensions": [
+                    {
+                    "Name": "AutoScalingGroupName",
+                    "Value": { "Ref": "WebServerGroup" }
+                    }
+                ],
+                "ComparisonOperator": "GreaterThanThreshold"
+            }
+        },
+        "CPUAlarmLow": {
+        "Type": "AWS::CloudWatch::Alarm",
+        "Properties": {
+            "AlarmDescription": "Scale-down if CPU < 70% for 10 minutes",
+            "MetricName": "CPUUtilization",
+            "Namespace": "AWS/EC2",
+            "Statistic": "Average",
+            "Period": "300",
+            "EvaluationPeriods": "2",
+            "Threshold": "70",
+            "AlarmActions": [ { "Ref": "WebServerScaleDownPolicy" } ],
+            "Dimensions": [
+                {
+                "Name": "AutoScalingGroupName",
+                "Value": { "Ref": "WebServerGroup" }
+                }
+            ],
+            "ComparisonOperator": "LessThanThreshold"
+            }
+        }
+    }
+}

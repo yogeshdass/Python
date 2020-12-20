@@ -1,0 +1,13 @@
+echo "ai"
+export AWS_ACCESS_KEY_ID=AKIAQ3AKCHSVKEO
+export AWS_SECRET_ACCESS_KEY=oiZpc70D2wYAq
+export AWS_DEFAULT_REGION=us-west-2
+export AWS_DEFAULT_OUTPUT=json
+
+#echo "IOT"
+#export AWS_ACCESS_KEY_ID=AKIAQNAKRHDM
+#export AWS_SECRET_ACCESS_KEY=61bwB+Ci1RF8+xrXT7gQBfTjW
+#export AWS_DEFAULT_REGION=ap-south-1
+#export AWS_PROFILE=default
+#export AWS_CONFIG_FILE=~/.aws/config
+

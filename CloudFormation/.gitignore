@@ -1,0 +1,11 @@
+bin
+include
+lib
+lib64@
+lib64
+pyvenv.cfg
+share
+.vscode
+/**/bin
+/**/__pycache__
+__main__.log

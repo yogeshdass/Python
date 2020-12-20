@@ -1,0 +1,44 @@
+Install python
+------------------
+sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev wget
+
+sudo ./configure --enable-optimizations
+sudo make altinstall
+sudo -H python3.8 -m pip install --upgrade pip
+
+pip3 install cfn_flip
+pip freeze >> requirements.txt
+
+pip3 install --user boto3
+# install venv
+apt-get install python3-venv
+		or
+sudo -H python3.7 -m pip install virtualenv
+
+python3.7 -m venv .
+
+ADD this to /bin/activate 
+source "$VIRTUAL_ENV/setenv.sh"
+
+source ./bin/activate
+pip3.7 install -r requirements.txt
+deactivate
+
+def sout = new StringBuilder(), serr = new StringBuilder()
+def proc = 'cat /home/ec2-user/.ssh/id_rsa'.execute()
+proc.consumeProcessOutput(sout, serr)
+proc.waitForOrKill(1000)
+println "out> $sout err> $serr"
+
+pip3 install --user boto3
+
+sudo -H pip install youtube-dl
+
+pip3 install awscli
+pip3 uninstall -y -r <(pip3 freeze)
+
+#install pip
+sudo -H python3.7 -m pip install --upgrade pip
+
+
+

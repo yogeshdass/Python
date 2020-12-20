@@ -1,0 +1,388 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Parameters": {
+        "VpcCIDR": {
+            "Type": "String",
+            "Default": "10.10.0.0/16"
+        }
+    },
+    "Resources": {
+        "vpc": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "VpcCIDR"
+                },
+                "EnableDnsSupport": true,
+                "EnableDnsHostnames": true,
+                "InstanceTenancy": "default"
+            }
+        },
+        "PuS1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "AvailabilityZone": { "Fn::Select": [ 0, { "Fn::GetAZs" : { "Ref" : "AWS::Region" }}]},
+                "CidrBlock": { "Fn::Select" : [ 0, { "Fn::Cidr" : [{ "Fn::GetAtt" : [ "vpc", "CidrBlock" ]}, 12, 9 ]}]},
+                "VpcId": {
+                    "Ref" : "vpc"
+                }
+            }
+        },
+        "PuS2": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "AvailabilityZone": { "Fn::Select": [ 1, { "Fn::GetAZs" : { "Ref" : "AWS::Region" }}]},
+                "CidrBlock": { "Fn::Select" : [ 1, { "Fn::Cidr" : [{ "Fn::GetAtt" : [ "vpc", "CidrBlock" ]}, 12, 9 ]}]},
+                "VpcId": {
+                    "Ref" : "vpc"
+                }
+            }
+        },
+        "PuS3": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "AvailabilityZone": { "Fn::Select": [ 2, { "Fn::GetAZs" : { "Ref" : "AWS::Region" }}]},
+                "CidrBlock": { "Fn::Select" : [ 2, { "Fn::Cidr" : [{ "Fn::GetAtt" : [ "vpc", "CidrBlock" ]}, 12, 9 ]}]},
+                "VpcId": {
+                    "Ref" : "vpc"
+                }
+            }
+        },
+        "PuS4": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "AvailabilityZone": { "Fn::Select": [ 3, { "Fn::GetAZs" : { "Ref" : "AWS::Region" }}]},
+                "CidrBlock": { "Fn::Select" : [ 3, { "Fn::Cidr" : [{ "Fn::GetAtt" : [ "vpc", "CidrBlock" ]}, 12, 9 ]}]},
+                "VpcId": {
+                    "Ref" : "vpc"
+                }
+            }
+        },
+        "PuS5": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "AvailabilityZone": { "Fn::Select": [ 4, { "Fn::GetAZs" : { "Ref" : "AWS::Region" }}]},
+                "CidrBlock": { "Fn::Select" : [ 4, { "Fn::Cidr" : [{ "Fn::GetAtt" : [ "vpc", "CidrBlock" ]}, 12, 9 ]}]},
+                "VpcId": {
+                    "Ref" : "vpc"
+                }
+            }
+        },
+        "PuS6": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "AvailabilityZone": { "Fn::Select": [ 5, { "Fn::GetAZs" : { "Ref" : "AWS::Region" }}]},
+                "CidrBlock": { "Fn::Select" : [ 5, { "Fn::Cidr" : [{ "Fn::GetAtt" : [ "vpc", "CidrBlock" ]}, 12, 9 ]}]},
+                "VpcId": {
+                    "Ref" : "vpc"
+                }
+            }
+        },
+        "PrS1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "AvailabilityZone": { "Fn::Select": [ 0, { "Fn::GetAZs" : { "Ref" : "AWS::Region" }}]},
+                "CidrBlock": { "Fn::Select" : [ 6, { "Fn::Cidr" : [{ "Fn::GetAtt" : [ "vpc", "CidrBlock" ]}, 12, 9 ]}]},
+                "VpcId": {
+                    "Ref" : "vpc"
+                }
+            }
+        },
+        "PrS2": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "AvailabilityZone": { "Fn::Select": [ 1, { "Fn::GetAZs" : { "Ref" : "AWS::Region" }}]},
+                "CidrBlock": { "Fn::Select" : [ 7, { "Fn::Cidr" : [{ "Fn::GetAtt" : [ "vpc", "CidrBlock" ]}, 12, 9 ]}]},
+                "VpcId": {
+                    "Ref" : "vpc"
+                }
+            }
+        },
+        "PrS3": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "AvailabilityZone": { "Fn::Select": [ 2, { "Fn::GetAZs" : { "Ref" : "AWS::Region" }}]},
+                "CidrBlock": { "Fn::Select" : [ 8, { "Fn::Cidr" : [{ "Fn::GetAtt" : [ "vpc", "CidrBlock" ]}, 12, 9 ]}]},
+                "VpcId": {
+                    "Ref" : "vpc"
+                }
+            }
+        },
+        "PrS4": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "AvailabilityZone": { "Fn::Select": [ 3, { "Fn::GetAZs" : { "Ref" : "AWS::Region" }}]},
+                "CidrBlock": { "Fn::Select" : [ 9, { "Fn::Cidr" : [{ "Fn::GetAtt" : [ "vpc", "CidrBlock" ]}, 12, 9 ]}]},
+                "VpcId": {
+                    "Ref" : "vpc"
+                }
+            }
+        },
+        "PrS5": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "AvailabilityZone": { "Fn::Select": [ 4, { "Fn::GetAZs" : { "Ref" : "AWS::Region" }}]},
+                "CidrBlock":{ "Fn::Select" : [ 10, { "Fn::Cidr" : [{ "Fn::GetAtt" : [ "vpc", "CidrBlock" ]}, 12, 9 ]}]},
+                "VpcId": {
+                    "Ref" : "vpc"
+                }
+            }
+        },
+        "PrS6": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "AvailabilityZone": { "Fn::Select": [ 5, { "Fn::GetAZs" : { "Ref" : "AWS::Region" }}]},
+                "CidrBlock": { "Fn::Select" : [ 11, { "Fn::Cidr" : [{ "Fn::GetAtt" : [ "vpc", "CidrBlock" ]}, 12, 9 ]}]},
+                "VpcId": {
+                    "Ref" : "vpc"
+                }
+            }
+        },
+        "igw": {
+            "Type": "AWS::EC2::InternetGateway"
+        },
+        "igwattachment" : {
+            "DependsOn": "igw",
+            "Type" : "AWS::EC2::VPCGatewayAttachment",
+            "Properties" : {
+               "VpcId" : { "Ref" : "vpc" },
+               "InternetGatewayId" : {
+                   "Ref" : "igw"
+                }
+            }
+        },
+        "neip": {
+            "Type": "AWS::EC2::EIP",
+            "Properties": {
+                "Domain": "vpc"
+            }
+        },
+        "ngw" : {
+            "DependsOn" : "igwattachment",
+            "Type" : "AWS::EC2::NatGateway",
+            "Properties" : {
+                "AllocationId": {
+                    "Fn::GetAtt" : ["neip", "AllocationId"]
+                },
+                "SubnetId": {
+                    "Ref" : "PuS1"
+                }
+            }
+        },
+        "PublicRt": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId" : {
+                    "Ref" : "vpc"
+                }
+            }
+        },
+        "PublicRouteAddition": {
+            "Type" : "AWS::EC2::Route",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref" : "PublicRt"
+                },
+                "DestinationCidrBlock" : "0.0.0.0/0",
+                "GatewayId": {
+                    "Ref" : "igw"
+                }
+            }
+        },
+        "PrivateRt": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId" : {
+                    "Ref" : "vpc"
+                }
+            }
+        },
+        "PrivateRtAddition": {
+            "Type" : "AWS::EC2::Route",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref" : "PrivateRt"
+                },
+                "DestinationCidrBlock" : "0.0.0.0/0",
+                "NatGatewayId": {
+                    "Ref" : "ngw"
+                }
+            }
+        },
+        "PuS1RtAssocitation": {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : {
+                    "Ref" : "PublicRt"
+                },
+                "SubnetId" : {
+                    "Ref" : "PuS1"
+                }
+            }
+        },
+        "PuS2RtAssocitation": {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : {
+                    "Ref" : "PublicRt"
+                },
+                "SubnetId" : {
+                    "Ref" : "PuS2"
+                }
+            }
+        },
+        "PuS3RtAssocitation": {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : {
+                    "Ref" : "PublicRt"
+                },
+                "SubnetId" : {
+                    "Ref" : "PuS3"
+                }
+            }
+        },
+        "PuS4RtAssocitation": {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : {
+                    "Ref" : "PublicRt"
+                },
+                "SubnetId" : {
+                    "Ref" : "PuS4"
+                }
+            }
+        },
+        "PuS5RtAssocitation": {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : {
+                    "Ref" : "PublicRt"
+                },
+                "SubnetId" : {
+                    "Ref" : "PuS5"
+                }
+            }
+        },
+        "PuS6RtAssocitation": {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : {
+                    "Ref" : "PublicRt"
+                },
+                "SubnetId" : {
+                    "Ref" : "PuS6"
+                }
+            }
+        },
+        "PrS1RtAssocitation": {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : {
+                    "Ref" : "PrivateRt"
+                },
+                "SubnetId" : {
+                    "Ref" : "PrS1"
+                }
+            }
+        },
+        "PrS2RtAssocitation": {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : {
+                    "Ref" : "PrivateRt"
+                },
+                "SubnetId" : {
+                    "Ref" : "PrS2"
+                }
+            }
+        },
+        "PrS3RtAssocitation": {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : {
+                    "Ref" : "PrivateRt"
+                },
+                "SubnetId" : {
+                    "Ref" : "PrS3"
+                }
+            }
+        },
+        "PrS4RtAssocitation": {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : {
+                    "Ref" : "PrivateRt"
+                },
+                "SubnetId" : {
+                    "Ref" : "PrS4"
+                }
+            }
+        },
+        "PrS5RtAssocitation": {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : {
+                    "Ref" : "PrivateRt"
+                },
+                "SubnetId" : {
+                    "Ref" : "PrS5"
+                }
+            }
+        },
+        "PrS6RtAssocitation": {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "RouteTableId" : {
+                    "Ref" : "PrivateRt"
+                },
+                "SubnetId" : {
+                    "Ref" : "PrS6"
+                }
+            }
+        },
+        "CustomSg" : {
+            "DependsOn": "vpc",
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupDescription" : "SG for us-east-1-10.10.0.0-VPC",
+                "VpcId" : {
+                    "Ref" : "vpc"
+                }
+            }
+        },
+        "SgRuleSshSelf": {
+            "Type": "AWS::EC2::SecurityGroupIngress",
+            "DependsOn": "CustomSg",
+            "Properties": {
+                "GroupId": { "Ref": "CustomSg" },
+                "IpProtocol": "tcp",
+                "FromPort": "22",
+                "ToPort": "22",
+                "SourceSecurityGroupId": { "Ref": "CustomSg" }
+            }
+        },
+        "SgRuleSshIBS": {
+            "Type": "AWS::EC2::SecurityGroupIngress",
+            "DependsOn": "CustomSg",
+            "Properties": {
+                "GroupId": { "Ref": "CustomSg" },
+                "IpProtocol": "tcp",
+                "FromPort": "22",
+                "ToPort": "22",
+                "CidrIp": "203.122.24.146/32"
+            }
+        },
+        "SgRuleAllTraffic": {
+            "Type": "AWS::EC2::SecurityGroupEgress",
+            "DependsOn": "CustomSg",
+            "Properties": {
+                "GroupId": { "Ref": "CustomSg" },
+                "IpProtocol": "-1",
+                "FromPort": "0",
+                "ToPort": "0",
+                "CidrIp": "0.0.0.0/0"
+            }
+        }
+    }
+}
